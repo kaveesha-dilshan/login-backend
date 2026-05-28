@@ -34,3 +34,42 @@ const reigsterUser = async (req, res) => {
         });
     }
 }
+
+
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // find usre
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({
+                message: "User not found"
+            });
+        }
+
+        // compare password
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(400).json({
+                message: "Invalid password"
+            });
+        }
+
+        res.status(200).json({
+            message: "Login successful"
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+module.exports = {
+    reigsterUser,
+    loginUser
+}
